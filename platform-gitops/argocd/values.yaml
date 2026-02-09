@@ -1,0 +1,51 @@
+global:
+  image:
+    tag: v2.10.0
+
+controller:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+server:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  config:
+    accounts.readonly: apiKey
+  service:
+    type: ClusterIP
+
+repoServer:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  initContainers:
+  - name: copyutil
+    command:
+    - sh
+    - -c
+    - /bin/cp --update /usr/local/bin/argocd /var/run/argocd/argocd && /bin/ln -sf /var/run/argocd/argocd /var/run/argocd/argocd-cmp-server
+
+applicationSet:
+  enabled: false
+
+redis-ha:
+  enabled: false
+
+

@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: service-b-dev
+  namespace: platform
+spec:
+  project: dev
+  source:
+    repoURL: REPLACE_ME_GIT_URL
+    targetRevision: main
+    path: apps/service-b/helm
+    helm:
+      valueFiles:
+        - values-dev.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+
