@@ -7,7 +7,7 @@ spec:
   project: dev
   source:
     repoURL: REPLACE_ME_GIT_URL
-    targetRevision: main
+    targetRevision: master
     path: apps/service-b/helm
     helm:
       valueFiles:

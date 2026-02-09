@@ -7,7 +7,7 @@ spec:
   project: platform
   source:
     repoURL: https://github.com/dmitri166/EKS_platform
-    targetRevision: main
+    targetRevision: master
     path: platform-gitops/apps
   destination:
     server: https://kubernetes.default.svc
