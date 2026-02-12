@@ -1,0 +1,7 @@
+argo-cd:
+  controller:
+    replicas: 1
+  server:
+    replicas: 1
+  repo:
+    insecure: true
