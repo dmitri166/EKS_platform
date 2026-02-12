@@ -12,7 +12,7 @@ spec:
       - path: apps/*.yaml
   template:
     metadata:
-      name: '{{path.basename}}'
+      name: '{{path.basename}}-app'
     spec:
       project: platform
       source:
