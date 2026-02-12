@@ -5,14 +5,33 @@ metadata:
   namespace: argocd
 spec:
   generators:
-  - git:
-      repoURL: https://github.com/dmitri166/EKS_platform
-      revision: HEAD
-      files:
-      - path: apps/*.yaml
+  - list:
+      elements:
+      - appName: external-secrets
+        path: apps/external-secrets.yaml
+      - appName: ingress-nginx
+        path: apps/ingress-nginx.yaml
+      - appName: kube-prometheus-stack
+        path: apps/kube-prometheus-stack.yaml
+      - appName: kubecost
+        path: apps/kubecost.yaml
+      - appName: litmuschaos
+        path: apps/litmuschaos.yaml
+      - appName: loki-stack
+        path: apps/loki-stack.yaml
+      - appName: opa-gatekeeper
+        path: apps/opa-gatekeeper.yaml
+      - appName: velero
+        path: apps/velero.yaml
+      - appName: argo-rollouts
+        path: apps/argo-rollouts.yaml
+      - appName: cert-manager
+        path: apps/cert-manager.yaml
+      - appName: network-policies
+        path: apps/network-policies.yaml
   template:
     metadata:
-      name: '{{path.basename}}-app'
+      name: '{{appName}}-app'
     spec:
       project: platform
       source:
