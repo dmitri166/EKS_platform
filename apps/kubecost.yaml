@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubecost
+  namespace: argocd
+spec:
+  project: platform
+  source:
+    repoURL: https://kubecost.github.io/cost-analyzer/
+    targetRevision: 1.108.0
+    chart: cost-analyzer
+    helm:
+      values: |
+        kubecostModel:
+          imageVersion: prod-1.108.0
+        kubecostFrontend:
+          imageVersion: prod-1.108.0
+        global:
+          grafana:
+            enabled: false  # Use existing Grafana
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubecost
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

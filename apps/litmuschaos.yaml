@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: litmuschaos
+  namespace: argocd
+spec:
+  project: platform
+  source:
+    repoURL: https://litmuschaos.github.io/litmus-helm/
+    targetRevision: 3.8.0
+    chart: litmus
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: litmus
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

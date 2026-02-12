@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: velero
+  namespace: argocd
+spec:
+  project: platform
+  source:
+    repoURL: https://vmware-tanzu.github.io/helm-charts
+    targetRevision: 5.4.0
+    chart: velero
+    helm:
+      values: |
+        configuration:
+          provider: aws
+          backupStorageLocation:
+            name: default
+            bucket: eks-platform-backups
+            config:
+              region: us-east-1
+        credentials:
+          useSecret: true
+          secretContents:
+            cloud: |
+              [default]
+              aws_access_key_id = <AWS_ACCESS_KEY_ID>
+              aws_secret_access_key = <AWS_SECRET_ACCESS_KEY>
+        schedules:
+          daily-backup:
+            schedule: "0 1 * * *"
+            template:
+              includedNamespaces:
+                - "*"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: velero
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

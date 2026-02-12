@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: opa-gatekeeper
+  namespace: argocd
+spec:
+  project: platform
+  source:
+    repoURL: https://open-policy-agent.github.io/gatekeeper/charts
+    targetRevision: 3.14.0
+    chart: gatekeeper
+    helm:
+      values: |
+        replicas: 1
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gatekeeper-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

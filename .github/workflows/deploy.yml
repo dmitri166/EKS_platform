@@ -1,0 +1,17 @@
+name: Kubernetes Deploy
+
+# Note: Deployments are handled by ArgoCD GitOps, not CI/CD pipelines
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy via ArgoCD
+        run: echo "Deployments handled by ArgoCD"

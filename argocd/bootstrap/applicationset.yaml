@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: platform-apps
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - appName: external-secrets
+        path: apps/external-secrets.yaml
+      - appName: ingress-nginx
+        path: apps/ingress-nginx.yaml
+      - appName: kube-prometheus-stack
+        path: apps/kube-prometheus-stack.yaml
+      - appName: argocd
+        path: apps/argocd.yaml
+      - appName: opa-gatekeeper
+        path: apps/opa-gatekeeper.yaml
+      - appName: argo-rollouts
+        path: apps/argo-rollouts.yaml
+      - appName: kubecost
+        path: apps/kubecost.yaml
+      - appName: velero
+        path: apps/velero.yaml
+  template:
+    metadata:
+      name: '{{appName}}'
+    spec:
+      project: platform
+      source:
+        repoURL: https://github.com/dmitri166/EKS_platform
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: platform
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

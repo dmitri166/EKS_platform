@@ -1,0 +1,27 @@
+name: Terraform Apply
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'terraform/**'
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init
+        run: terraform init
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+      - name: Terraform Apply
+        run: terraform apply tfplan
