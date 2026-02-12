@@ -8,8 +8,8 @@ spec:
   - git:
       repoURL: https://github.com/dmitri166/EKS_platform
       revision: HEAD
-      directories:
-      - path: apps
+      files:
+      - path: apps/*.yaml
   template:
     metadata:
       name: '{{path.basename}}'
