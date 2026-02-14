@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubecost
+  labels:
+    environment: production
+    project: eks-platform
+    purpose: cost-monitoring
+  annotations:
+    argocd.argoproj.io/sync-options: CreateNamespace=true
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: kubecost-quota
+  namespace: kubecost
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 2Gi
+    limits.cpu: "2"
+    limits.memory: 4Gi
+    persistentvolumeclaims: "3"
+    pods: "10"
+    services: "5"
+    secrets: "5"
+    configmaps: "5"

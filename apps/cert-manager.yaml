@@ -19,6 +19,40 @@ spec:
           limits:
             cpu: 200m
             memory: 256Mi
+        webhook:
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 9402
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 9402
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+        cainjector:
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 9401
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 9401
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
   destination:
     server: https://kubernetes.default.svc
     namespace: platform

@@ -7,40 +7,57 @@ spec:
   generators:
   - list:
       elements:
+      - appName: namespaces
+        path: argocd/bootstrap/namespaces.yaml
+        namespace: default
       - appName: external-secrets
         path: apps/external-secrets.yaml
+        namespace: platform
       - appName: ingress-nginx
         path: apps/ingress-nginx.yaml
+        namespace: platform
       - appName: kube-prometheus-stack
         path: apps/kube-prometheus-stack.yaml
+        chart: kube-prometheus-stack
+        namespace: monitoring
       - appName: kubecost
         path: apps/kubecost.yaml
+        chart: cost-analyzer
+        namespace: kubecost
       - appName: litmuschaos
         path: apps/litmuschaos.yaml
+        namespace: platform
       - appName: loki-stack
         path: apps/loki-stack.yaml
+        namespace: monitoring
       - appName: opa-gatekeeper
         path: apps/opa-gatekeeper.yaml
+        namespace: security
       - appName: velero
         path: apps/velero.yaml
+        namespace: platform
       - appName: argo-rollouts
         path: apps/argo-rollouts.yaml
+        namespace: argocd
       - appName: cert-manager
         path: apps/cert-manager.yaml
+        namespace: platform
       - appName: network-policies
         path: apps/network-policies.yaml
+        namespace: platform
   template:
     metadata:
-      name: '{{appName}}-app'
+      name: '{{appName}}'
     spec:
       project: platform
       source:
         repoURL: https://github.com/dmitri166/EKS_platform
         targetRevision: HEAD
         path: '{{path}}'
+        chart: '{{chart}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: platform
+        namespace: '{{namespace}}'
       syncPolicy:
         automated:
           prune: true

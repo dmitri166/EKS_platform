@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: security
+  labels:
+    environment: production
+    project: eks-platform
+    purpose: security
+  annotations:
+    argocd.argoproj.io/sync-options: CreateNamespace=true
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: security-quota
+  namespace: security
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 2Gi
+    limits.cpu: "2"
+    limits.memory: 4Gi
+    persistentvolumeclaims: "2"
+    pods: "10"
+    services: "5"
+    secrets: "10"
+    configmaps: "10"
