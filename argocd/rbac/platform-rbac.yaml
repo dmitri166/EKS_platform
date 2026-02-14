@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Role
+metadata:
+  name: platform-admin
+  namespace: argocd
+rules:
+- apiGroups: [""]
+  resources: ["applications", "appprojects"]
+  verbs: ["get", "list", "watch", "update", "patch", "delete"]
+- apiGroups: ["argoproj.io"]
+  resources: ["applications", "appprojects"]
+  verbs: ["get", "list", "watch", "update", "patch", "delete"]
+---
+apiVersion: v1
+kind: Role
+metadata:
+  name: platform-developer
+  namespace: argocd
+rules:
+- apiGroups: [""]
+  resources: ["applications"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["argoproj.io"]
+  resources: ["applications"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: v1
+kind: RoleBinding
+metadata:
+  name: platform-admin-binding
+  namespace: argocd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: platform-admin
+subjects:
+- kind: ServiceAccount
+  name: argocd-server
+---
+apiVersion: v1
+kind: RoleBinding
+metadata:
+  name: platform-developer-binding
+  namespace: argocd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: platform-developer
+subjects:
+- kind: Group
+  name: platform-developers

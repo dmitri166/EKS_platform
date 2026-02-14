@@ -6,12 +6,35 @@ metadata:
 spec:
   description: Platform components (Argo CD, ingress, cert-manager, ESO, observability)
   sourceRepos:
-    - '*'
+    - https://github.com/dmitri166/EKS_platform
   destinations:
     - namespace: platform
       server: https://kubernetes.default.svc
     - namespace: argocd
       server: https://kubernetes.default.svc
   clusterResourceWhitelist:
-    - group: '*'
-      kind: '*'
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: Service
+    - group: apps
+      kind: StatefulSet
+    - group: apps
+      kind: DaemonSet
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+    - group: extensions.k8s.io
+      kind: IngressClass
+    - group: cert-manager.k8s.io
+      kind: Certificate
+    - group: cert-manager.k8s.io
+      kind: Issuer
+  roles:
+    - name: platform-admin
+      description: Full access to platform applications
+      policies:
+      - p, proj:platform:*
+      - p, proj:platform:applications:sync
+      - p, proj:platform:applications:override
