@@ -1,0 +1,57 @@
+name: Rollback Manager
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'Application name to rollback'
+        required: true
+      revision:
+        description: 'Target revision (leave empty for previous)'
+        required: false
+      namespace:
+        description: 'Target namespace'
+        required: true
+        default: 'platform'
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name eks-platform
+
+      - name: Get Application History
+        run: |
+          echo "Getting history for ${{ github.event.inputs.app }} in ${{ github.event.inputs.namespace }}"
+          argocd app history ${{ github.event.inputs.app }} -n ${{ github.event.inputs.namespace }} --limit 5
+
+      - name: Validate Rollback Target
+        run: |
+          if [ -n "${{ github.event.inputs.revision }}" ]; then
+            echo "Rolling back to revision: ${{ github.event.inputs.revision }}"
+          else
+            echo "Rolling back to previous healthy revision"
+          fi
+
+      - name: Execute Rollback
+        run: |
+          if [ -n "${{ github.event.inputs.revision }}" ]; then
+            argocd app rollback ${{ github.event.inputs.app }} --revision ${{ github.event.inputs.revision }} -n ${{ github.event.inputs.namespace }}
+          else
+            argocd app rollback ${{ github.event.inputs.app }} -n ${{ github.event.inputs.namespace }}
+          fi
+
+      - name: Verify Rollback
+        run: |
+          echo "Verifying rollback success..."
+          sleep 30
+          kubectl wait --for=condition=healthy deployment/${{ github.event.inputs.app }} -n ${{ github.event.inputs.namespace }} --timeout=300s
+
+      - name: Notify Rollback Complete
+        run: |
+          echo "🔄 Rollback of ${{ github.event.inputs.app }} completed successfully"

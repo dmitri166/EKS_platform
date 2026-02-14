@@ -1,0 +1,56 @@
+name: Environment Promotion
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to promote to production'
+        required: true
+      environment:
+        description: 'Target environment (staging/production)'
+        required: true
+        default: 'production'
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name eks-platform
+          
+      - name: Validate Environment
+        run: |
+          echo "Validating deployment to ${{ github.event.inputs.environment || 'production' }}"
+          kubectl get applications -n argocd
+
+      - name: Sync ArgoCD Applications
+        run: |
+          echo "Syncing applications to ${{ github.event.inputs.environment || 'production' }}"
+          argocd app sync --recursive
+
+      - name: Health Check
+        run: |
+          echo "Checking application health..."
+          sleep 30
+          kubectl wait --for=condition=healthy deployment/ingress-nginx -n platform --timeout=300s
+          kubectl wait --for=condition=healthy deployment/cert-manager -n platform --timeout=300s
+
+      - name: Notify Success
+        if: success()
+        run: |
+          echo "✅ Promotion to ${{ github.event.inputs.environment || 'production' }} completed successfully"
+
+      - name: Rollback on Failure
+        if: failure()
+        run: |
+          echo "❌ Promotion failed, initiating rollback..."
+          argocd app rollback ingress-nginx --revision $(argocd app history ingress-nginx --limit 2 | tail -n 2 | head -n 1 | awk '{print $1}')
+          argocd app rollback cert-manager --revision $(argocd app history cert-manager --limit 2 | tail -n 2 | head -n 1 | awk '{print $1}')

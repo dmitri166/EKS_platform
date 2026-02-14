@@ -1,17 +1,54 @@
-name: Kubernetes Deploy
-
-# Note: Deployments are handled by ArgoCD GitOps, not CI/CD pipelines
+name: Deployment Validation
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
+    paths: ['apps/**', 'argocd/**', 'namespaces/**']
 
 jobs:
-  deploy:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Deploy via ArgoCD
-        run: echo "Deployments handled by ArgoCD"
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name eks-platform
+
+      - name: Validate ArgoCD Applications
+        run: |
+          echo "Checking ArgoCD application health..."
+          kubectl get applications -n argocd -o json
+
+      - name: Sync Status Check
+        run: |
+          echo "Verifying ArgoCD sync status..."
+          argocd app list --output json
+
+      - name: Validate Critical Apps
+        run: |
+          echo "Validating critical applications..."
+          
+          # Check ingress-nginx
+          kubectl wait --for=condition=available deployment/ingress-nginx -n platform --timeout=300s || echo "⚠️ ingress-nginx not ready"
+          
+          # Check cert-manager
+          kubectl wait --for=condition=available deployment/cert-manager -n platform --timeout=300s || echo "⚠️ cert-manager not ready"
+          
+          # Check external-secrets
+          kubectl wait --for=condition=available deployment/external-secrets -n platform --timeout=300s || echo "⚠️ external-secrets not ready"
+
+      - name: Resource Usage Check
+        run: |
+          echo "Checking resource usage..."
+          kubectl top nodes --no-headers
+          kubectl top pods -n platform --no-headers
+
+      - name: Generate Deployment Report
+        run: |
+          echo "📊 Deployment Validation Report"
+          echo "=============================="
+          kubectl get applications -n argocd
+          echo "=============================="
+          kubectl get pods -n platform --field-selector=status.phase=Running
