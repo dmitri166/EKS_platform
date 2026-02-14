@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: velero
+  labels:
+    environment: production
+    project: eks-platform
+    purpose: backup
+  annotations:
+    argocd.argoproj.io/sync-options: CreateNamespace=true
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: velero-quota
+  namespace: velero
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 2Gi
+    limits.cpu: "2"
+    limits.memory: 4Gi
+    persistentvolumeclaims: "5"
+    pods: "10"
+    services: "5"
+    secrets: "10"
+    configmaps: "10"

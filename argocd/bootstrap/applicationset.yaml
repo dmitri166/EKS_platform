@@ -26,16 +26,18 @@ spec:
         namespace: kubecost
       - appName: litmuschaos
         path: apps/litmuschaos.yaml
+        chart: litmuschaos
         namespace: platform
       - appName: loki-stack
         path: apps/loki-stack.yaml
+        chart: loki-stack
         namespace: monitoring
       - appName: opa-gatekeeper
         path: apps/opa-gatekeeper.yaml
         namespace: security
       - appName: velero
         path: apps/velero.yaml
-        namespace: platform
+        namespace: velero
       - appName: argo-rollouts
         path: apps/argo-rollouts.yaml
         namespace: argocd

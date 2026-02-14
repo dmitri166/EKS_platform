@@ -16,3 +16,22 @@ spec:
     automated:
       prune: true
       selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: velero-namespace
+  namespace: argocd
+spec:
+  project: platform
+  source:
+    repoURL: https://github.com/dmitri166/EKS_platform
+    targetRevision: HEAD
+    path: namespaces/velero.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
