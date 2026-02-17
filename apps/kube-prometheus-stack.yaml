@@ -69,6 +69,19 @@ spec:
               limits:
                 cpu: 200m
                 memory: 256Mi
+        backstage:
+          enabled: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          database:
+            # Use existing PostgreSQL or external
+          client:
+            # Configure to use existing services
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

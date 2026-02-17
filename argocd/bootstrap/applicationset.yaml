@@ -20,6 +20,9 @@ spec:
         path: apps/kube-prometheus-stack.yaml
         chart: kube-prometheus-stack
         namespace: monitoring
+      - appName: backstage
+        path: apps/kube-prometheus-stack.yaml
+        namespace: monitoring
       - appName: kubecost
         path: apps/kubecost.yaml
         chart: cost-analyzer
