@@ -23,8 +23,8 @@ spec:
           secretContents:
             cloud: |
               [default]
-              aws_access_key_id = <AWS_ACCESS_KEY_ID>
-              aws_secret_access_key = <AWS_SECRET_ACCESS_KEY>
+              aws_access_key_id = ${VELERO_AWS_ACCESS_KEY_ID}
+              aws_secret_access_key = ${VELERO_AWS_SECRET_ACCESS_KEY}
         schedules:
           daily-backup:
             schedule: "0 1 * * *"

@@ -84,12 +84,12 @@ spec:
               host: postgres
               port: 5432
               user: backstage
-              password: backstage
+              password: ${BACKSTAGE_DB_PASSWORD}
               database: backstage
           postgresql:
             enabled: true
             auth:
-              postgresPassword: backstage
+              postgresPassword: ${BACKSTAGE_DB_PASSWORD}
               database: backstage
             primary:
               persistence:
