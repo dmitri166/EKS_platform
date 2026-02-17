@@ -79,9 +79,54 @@ spec:
               cpu: 500m
               memory: 512Mi
           database:
-            # Use existing PostgreSQL or external
-          client:
-            # Configure to use existing services
+            client: pg
+            connection:
+              host: postgres
+              port: 5432
+              user: backstage
+              password: backstage
+              database: backstage
+          postgresql:
+            enabled: true
+            auth:
+              postgresPassword: backstage
+              database: backstage
+            primary:
+              persistence:
+                enabled: true
+                size: 10Gi
+                storageClass: gp2
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+              livenessProbe:
+                httpGet:
+                  path: /healthz
+                  port: 5432
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                timeoutSeconds: 5
+                failureThreshold: 3
+              readinessProbe:
+                httpGet:
+                  path: /healthz
+                  port: 5432
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 3
+                failureThreshold: 3
+              startupProbe:
+                httpGet:
+                  path: /healthz
+                  port: 5432
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                timeoutSeconds: 3
+                failureThreshold: 30
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
